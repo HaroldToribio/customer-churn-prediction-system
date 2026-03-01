@@ -109,6 +109,14 @@ Proyecto desarrollado para la asignatura de Simulación de Sistemas.
 
 ---
 
+## 🐳 Ejecutar con Docker
+
+Construir y levantar el sistema:
+docker-compose up --build
+
+La API estará disponible en:
+http://localhost:8000
+
 ## 👨‍💻 Autor
 
 Harold Toribio
