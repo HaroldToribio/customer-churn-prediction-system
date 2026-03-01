@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Churn Prediction Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .header {
+            background: #1e293b;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            width: 350px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .result-box {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .risk-high { color: red; }
+        .risk-low { color: green; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    Customer Churn Prediction Dashboard
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h3>Client Data</h3>
+
+        <label>Tenure</label>
+        <input type="number" id="tenure">
+
+        <label>Monthly Charges</label>
+        <input type="number" id="monthly" step="0.01">
+
+        <button onclick="predict()">Predict</button>
+
+        <div class="result-box" id="result"></div>
+    </div>
+
+    <div class="card">
+        <h3>Churn Probability</h3>
+        <canvas id="probChart"></canvas>
+    </div>
+
+</div>
+
+<script>
+let chart;
+
+function createChart(prob) {
+
+    const ctx = document.getElementById('probChart').getContext('2d');
+
+    if(chart) {
+        chart.destroy();
+    }
+
+    chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Churn', 'No Churn'],
+            datasets: [{
+                data: [prob * 100, 100 - prob * 100],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+}
+
+async function predict() {
+
+    const data = {
+        gender: "Female",
+        SeniorCitizen: 0,
+        Partner: "Yes",
+        Dependents: "No",
+        tenure: parseInt(document.getElementById("tenure").value),
+        PhoneService: "Yes",
+        MultipleLines: "No",
+        InternetService: "DSL",
+        OnlineSecurity: "Yes",
+        OnlineBackup: "No",
+        DeviceProtection: "No",
+        TechSupport: "Yes",
+        StreamingTV: "No",
+        StreamingMovies: "No",
+        Contract: "Month-to-month",
+        PaperlessBilling: "Yes",
+        PaymentMethod: "Electronic check",
+        MonthlyCharges: parseFloat(document.getElementById("monthly").value),
+        TotalCharges: 1000
+    };
+
+    const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    const riskText = result.prediction === 1 
+        ? "<span class='risk-high'>HIGH RISK</span>" 
+        : "<span class='risk-low'>LOW RISK</span>";
+
+    document.getElementById("result").innerHTML =
+        riskText + "<br>Probability: " + (result.probability * 100).toFixed(2) + "%";
+
+    createChart(result.probability);
+}
+</script>
+
+</body>
+</html>
