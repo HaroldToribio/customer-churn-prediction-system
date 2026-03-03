@@ -2,6 +2,8 @@
 
 Sistema Predictivo de Abandono de Clientes
 
+<img width="945" height="716" alt="image" src="https://github.com/user-attachments/assets/a055adc3-1c20-469c-8e43-a42f29e39800" />
+
 ---
 
 ## 📌 Descripción
