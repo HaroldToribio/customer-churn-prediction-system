@@ -1,31 +1,46 @@
 # Customer Churn Prediction System
 
-Sistema completo de predicción de abandono de clientes utilizando Machine Learning, API REST y Dashboard Web.
+Sistema Predictivo de Abandono de Clientes
 
 ---
 
 ## 📌 Descripción
 
-Este proyecto implementa un sistema cliente-servidor que permite predecir la probabilidad de abandono (churn) de un cliente de telecomunicaciones.
+Este proyecto implementa un Sistema de Predicción de Abandono de Clientes (Customer Churn) utilizando un modelo de Regresión Logística.
 
-El sistema incluye:
+El sistema permite analizar el perfil de un cliente y estimar la probabilidad de que abandone el servicio, presentando los resultados en un Dashboard Ejecutivo interactivo.
 
-- Modelo de Machine Learning entrenado con datos reales.
-- API REST desarrollada con FastAPI.
-- Dashboard web interactivo.
-- Visualización gráfica de probabilidad de churn.
+El proyecto incluye:
+
+Modelo de Machine Learning entrenado
+API REST desarrollada con FastAPI
+Frontend interactivo en HTML + JavaScript
+Visualización de KPIs y probabilidad
+Contenerización con Docker
+Arquitectura separada Backend / Frontend
 
 ---
 
 ## 🧠 Modelo de Machine Learning
 
-- Algoritmo: Logistic Regression
-- Preprocesamiento:
-  - Limpieza de datos
-  - Conversión de variables
-  - One-Hot Encoding
-  - Escalado con StandardScaler
-- Serialización del modelo con Joblib
+Se implementó un modelo de:
+
+Regresión Logística
+
+Variables principales consideradas:
+
+Tipo de contrato
+Antigüedad (tenure)
+Cargos mensuales
+Cargos totales
+Servicio de internet
+Soporte técnico
+Servicios adicionales
+
+El modelo devuelve:
+
+Probabilidad de abandono (0–1)
+Clasificación final (ALTO / BAJO riesgo)
 
 ---
 
@@ -36,21 +51,19 @@ Usuario → Frontend (HTML + Chart.js) → FastAPI → Modelo → Respuesta JSON
 ---
 
 ## 📂 Estructura del Proyecto
-segundo_parcial/
+
+customer-churn-prediction-system.git/
 │
 ├── backend/
-│ ├── src/
-│ │ ├── main.py
-│ │ ├── limpieza.py
-│ │ ├── entrenamiento.py
-│ │ └── evaluacion.py
-│ ├── models/
-│ │ └── modelo_churn.pkl
-│ └── data/
+│   ├── entrenamiento.py
+│   ├── main.py
+│   └── modelo.pkl
 │
 ├── frontend/
-│ └── index.html
+│   └── index.html
 │
+├── Dockerfile
+├── docker-compose.yml
 ├── requirements.txt
 └── README.md
 
@@ -59,7 +72,8 @@ segundo_parcial/
 ## 🚀 Instalación
 
 1. Clonar el repositorio:
-git clone <url-del-repositorio>
+git clone https://github.com/HaroldToribio/customer-churn-prediction-system.git
+cd customer-churn-prediction-system.git
 
 2. Crear entorno virtual:
 python -m venv .venv
@@ -120,3 +134,5 @@ http://localhost:8000
 ## 👨‍💻 Autor
 
 Harold Toribio
+
+Proyecto desarrollado como sistema académico y pieza de portafolio profesional orientada a Data Science y Backend Development.

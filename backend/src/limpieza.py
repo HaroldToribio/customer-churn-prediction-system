@@ -1,46 +1,16 @@
+import os
 import pandas as pd
 
-'''
-Primera limpieza
-
-def cargar_y_limpiar_datos():
-
-    # Ruta del dataset
-    ruta = "../data/WA_Fn-UseC_-Telco-Customer-Churn.csv"
-
-    # Cargar dataset
-    df = pd.read_csv(ruta)
-
-    print("Dataset cargado correctamente")
-    print("Dimensiones iniciales:", df.shape)
-
-    # Eliminar columna irrelevante
-    df.drop("customerID", axis=1, inplace=True)
-
-    # Convertir TotalCharges a numérico
-    df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
-
-    # Eliminar valores nulos
-    df.dropna(inplace=True)
-
-    # Convertir Churn a binaria
-    df["Churn"] = df["Churn"].map({"Yes": 1, "No": 0})
-
-    print("Limpieza completada")
-    print("Dimensiones finales:", df.shape)
-
-    return df
-
-
-if __name__ == "__main__":
-    df_limpio = cargar_y_limpiar_datos()
-    print(df_limpio.head()) 
-    '''
+# pyright: reportUnknownVariableType=false
+# pyright: reportUnknownMemberType=false
+# pyright: reportUnknownArgumentType=false
 
 def cargar_y_preparar_datos():
+    # Ruta absoluta al dataset
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    ruta_data = os.path.join(base_dir, "..", "data", "WA_Fn-UseC_-Telco-Customer-Churn.csv")
 
-    ruta = "../data/WA_Fn-UseC_-Telco-Customer-Churn.csv"
-    df = pd.read_csv(ruta)
+    df = pd.read_csv(ruta_data)
 
     print("Dimensiones iniciales:", df.shape)
 
@@ -59,18 +29,9 @@ def cargar_y_preparar_datos():
     print("Dimensiones después limpieza:", df.shape)
 
     # Separar variables
-    x = df.drop("Churn", axis=1)
+    X = df.drop("Churn", axis=1)
     y = df["Churn"]
 
-    # One Hot Encoding
-    x = pd.get_dummies(x, drop_first=True)
+    print("Dimensiones después de encoding:", X.shape)
 
-    print("Dimensiones después de encoding:", x.shape)
-
-    return x, y
-
-
-if __name__ == "__main__":
-    x, y = cargar_y_preparar_datos()
-    print("x shape:", x.shape)
-    print("y shape:", y.shape)
+    return X, y

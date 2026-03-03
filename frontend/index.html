@@ -1,116 +1,232 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Churn Prediction Dashboard</title>
+    <title>Dashboard Ejecutivo de Churn</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #f4f6f9;
             margin: 0;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: #1e293b;
         }
 
         .header {
-            background: #1e293b;
-            color: white;
-            padding: 20px;
+            padding: 30px;
             text-align: center;
-            font-size: 22px;
+            color: white;
+            font-size: 26px;
+            font-weight: 600;
         }
 
-        .container {
+        .dashboard {
             display: flex;
             justify-content: center;
-            margin-top: 30px;
             gap: 40px;
+            padding: 40px;
+            flex-wrap: wrap;
         }
 
-        .card {
-            background: white;
-            padding: 25px;
-            width: 350px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+        .panel {
+            background: #f8fafc;
+            padding: 30px;
+            width: 480px;
+            border-radius: 16px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
         }
 
-        input {
+        h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 10px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        input, select {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
+            padding: 10px;
+            margin-bottom: 14px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
         }
 
         button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: #2563eb;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
         }
 
         button:hover {
-            background: #1d4ed8;
+            background: #1e40af;
         }
 
-        .result-box {
+        .kpi-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .kpi {
+            background: white;
+            flex: 1;
+            margin: 5px;
+            padding: 15px;
+            border-radius: 12px;
             text-align: center;
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 18px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
         }
 
-        .risk-high { color: red; }
-        .risk-low { color: green; }
+        .kpi h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .kpi p {
+            margin: 5px 0 0;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .explicacion {
+            font-size: 14px;
+            margin-top: 20px;
+            background: #e2e8f0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
     </style>
 </head>
+
 <body>
 
 <div class="header">
-    Customer Churn Prediction Dashboard
+    Dashboard Ejecutivo de Predicción de Abandono (Churn)
 </div>
 
-<div class="container">
+<div class="dashboard">
 
-    <div class="card">
-        <h3>Client Data</h3>
+    <!-- Panel de Entrada -->
+    <div class="panel">
+        <h3>Perfil del Cliente</h3>
 
-        <label>Tenure</label>
-        <input type="number" id="tenure">
+        <div class="error" id="errorMsg"></div>
 
-        <label>Monthly Charges</label>
-        <input type="number" id="monthly" step="0.01">
+        <label>Tipo de Contrato</label>
+        <select id="contract">
+            <option value="Month-to-month">Mensual</option>
+            <option value="One year">Un año</option>
+            <option value="Two year">Dos años</option>
+        </select>
 
-        <button onclick="predict()">Predict</button>
+        <label>Servicio de Internet</label>
+        <select id="internet">
+            <option value="DSL">DSL</option>
+            <option value="Fiber optic">Fibra óptica</option>
+            <option value="No">Sin servicio</option>
+        </select>
 
-        <div class="result-box" id="result"></div>
+        <label>Soporte Técnico</label>
+        <select id="tech">
+            <option value="Yes">Sí</option>
+            <option value="No">No</option>
+        </select>
+
+        <label>Antigüedad (meses)</label>
+        <input type="number" id="tenure" min="0">
+
+        <label>Cargo Mensual ($)</label>
+        <input type="number" id="monthly" min="0" step="0.01">
+
+        <div id="totalDisplay">
+            Cargos Totales Estimados: $0.00
+        </div>
+
+        <br>
+        <button onclick="predict()">Analizar Riesgo</button>
     </div>
 
-    <div class="card">
-        <h3>Churn Probability</h3>
+    <!-- Panel de Resultados -->
+    <div class="panel">
+        <h3>Análisis de Riesgo</h3>
+
+        <div class="kpi-container">
+            <div class="kpi">
+                <h2 id="probKPI">0%</h2>
+                <p>Probabilidad de Abandono</p>
+            </div>
+
+            <div class="kpi">
+                <h2 id="riskKPI">BAJO</h2>
+                <p>Nivel de Riesgo</p>
+            </div>
+        </div>
+
         <canvas id="probChart"></canvas>
+
+        <div class="explicacion">
+            <strong>Explicación del Modelo:</strong><br><br>
+            Esta predicción se genera utilizando un modelo de Regresión Logística.
+            El modelo analiza patrones históricos de comportamiento del cliente,
+            considerando variables como tipo de contrato, antigüedad,
+            cargos mensuales, servicio de internet y soporte técnico.
+            <br><br>
+            Estadísticamente, los clientes con contratos mensuales,
+            baja antigüedad y cargos elevados presentan mayor probabilidad
+            de abandono del servicio.
+        </div>
+
     </div>
 
 </div>
 
 <script>
+
 let chart;
+
+function calcularTotal() {
+    const tenure = parseFloat(document.getElementById("tenure").value) || 0;
+    const monthly = parseFloat(document.getElementById("monthly").value) || 0;
+    const total = tenure * monthly;
+
+    document.getElementById("totalDisplay").innerHTML =
+        "Cargos Totales Estimados: $" + total.toFixed(2);
+
+    return total;
+}
+
+document.getElementById("tenure").addEventListener("input", calcularTotal);
+document.getElementById("monthly").addEventListener("input", calcularTotal);
 
 function createChart(prob) {
 
     const ctx = document.getElementById('probChart').getContext('2d');
 
-    if(chart) {
-        chart.destroy();
-    }
+    if(chart) chart.destroy();
 
     chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Churn', 'No Churn'],
+            labels: ['Abandono', 'Permanece'],
             datasets: [{
-                data: [prob * 100, 100 - prob * 100],
-                borderWidth: 1
+                data: [prob * 100, 100 - prob * 100]
             }]
         },
         options: {
@@ -124,29 +240,48 @@ function createChart(prob) {
 
 async function predict() {
 
+    document.getElementById("errorMsg").innerText = "";
+
+    const tenure = parseFloat(document.getElementById("tenure").value);
+    const monthly = parseFloat(document.getElementById("monthly").value);
+
+    if(isNaN(tenure) || tenure <= 0) {
+        document.getElementById("errorMsg").innerText =
+            "La antigüedad debe ser mayor a 0.";
+        return;
+    }
+
+    if(isNaN(monthly) || monthly <= 0) {
+        document.getElementById("errorMsg").innerText =
+            "El cargo mensual debe ser mayor a 0.";
+        return;
+    }
+
+    const totalCharges = calcularTotal();
+
     const data = {
         gender: "Female",
         SeniorCitizen: 0,
         Partner: "Yes",
         Dependents: "No",
-        tenure: parseInt(document.getElementById("tenure").value),
+        tenure: tenure,
         PhoneService: "Yes",
         MultipleLines: "No",
-        InternetService: "DSL",
-        OnlineSecurity: "Yes",
+        InternetService: document.getElementById("internet").value,
+        OnlineSecurity: "No",
         OnlineBackup: "No",
         DeviceProtection: "No",
-        TechSupport: "Yes",
+        TechSupport: document.getElementById("tech").value,
         StreamingTV: "No",
         StreamingMovies: "No",
-        Contract: "Month-to-month",
+        Contract: document.getElementById("contract").value,
         PaperlessBilling: "Yes",
         PaymentMethod: "Electronic check",
-        MonthlyCharges: parseFloat(document.getElementById("monthly").value),
-        TotalCharges: 1000
+        MonthlyCharges: monthly,
+        TotalCharges: totalCharges
     };
 
-    const response = await fetch("http://127.0.0.1:8000/predict", {
+    const response = await fetch("http://127.0.0.1:8000/predecir", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -154,15 +289,17 @@ async function predict() {
 
     const result = await response.json();
 
-    const riskText = result.prediction === 1 
-        ? "<span class='risk-high'>HIGH RISK</span>" 
-        : "<span class='risk-low'>LOW RISK</span>";
+    const probability = result.probabilidad_churn;
 
-    document.getElementById("result").innerHTML =
-        riskText + "<br>Probability: " + (result.probability * 100).toFixed(2) + "%";
+    document.getElementById("probKPI").innerText =
+        (probability * 100).toFixed(2) + "%";
 
-    createChart(result.probability);
+    document.getElementById("riskKPI").innerText =
+        result.prediccion === 1 ? "ALTO" : "BAJO";
+
+    createChart(probability);
 }
+
 </script>
 
 </body>

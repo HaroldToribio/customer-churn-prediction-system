@@ -1,33 +1,32 @@
 import os
-import joblib
+import joblib # type: ignore
 import pandas as pd
-from fastapi import FastAPI
-from pydantic import BaseModel
-from limpieza import cargar_y_preparar_datos
 from fastapi.middleware.cors import CORSMiddleware
 
 # pyright: reportUnknownVariableType=false
 # pyright: reportUnknownMemberType=false
 # pyright: reportUnknownArgumentType=false
-# pyright: reportMissingTypeStubs=false
 
-# ===== CREAR APP =====
+from fastapi import FastAPI
+from pydantic import BaseModel
+
 app = FastAPI(title="Churn Prediction API")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # En desarrollo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "modelo_churn.pkl")
+# Cargar modelo
+base_dir = os.path.dirname(os.path.abspath(__file__))
+ruta_modelo = os.path.join(base_dir, "..", "models", "modelo_churn.pkl")
 
-modelo = joblib.load(MODEL_PATH)
+modelo = joblib.load(ruta_modelo)
+print("Modelo cargado correctamente")
 
-x_train, y_train = cargar_y_preparar_datos()
-columnas_modelo = x_train.columns
 
 class Cliente(BaseModel):
     gender: str
@@ -50,17 +49,22 @@ class Cliente(BaseModel):
     MonthlyCharges: float
     TotalCharges: float
 
-@app.post("/predict")
-def predecir(cliente: Cliente) -> dict[str, float | int]:
 
-    cliente_df = pd.DataFrame([cliente.model_dump()])
-    cliente_df = pd.get_dummies(cliente_df, drop_first=True)
-    cliente_df = cliente_df.reindex(columns=columnas_modelo, fill_value=0)
+@app.get("/")
+def root():
+    return {"mensaje": "API de predicción de churn activa"}
 
-    pred = modelo.predict(cliente_df)[0]
-    proba = modelo.predict_proba(cliente_df)[0][1]
+
+@app.post("/predecir")
+def predecir(cliente: Cliente) -> dict[str, int | float]:
+
+    # Convertir a DataFrame
+    datos = pd.DataFrame([cliente.model_dump()])
+
+    prediccion = modelo.predict(datos)[0]
+    probabilidad = modelo.predict_proba(datos)[0][1]
 
     return {
-        "prediction": int(pred),
-        "probability": round(float(proba), 4)
+        "prediccion": int(prediccion),
+        "probabilidad_churn": round(float(probabilidad), 4)
     }
