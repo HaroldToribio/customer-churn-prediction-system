@@ -48,6 +48,11 @@ class Cliente(BaseModel):
     PaymentMethod: str
     MonthlyCharges: float
     TotalCharges: float
+    CustomerSupportCalls: int
+    ComplaintCount: int
+    CompetitorOffer: str
+    CustomerSatisfactionScore: int
+    LatePayments: int
 
 
 @app.get("/")

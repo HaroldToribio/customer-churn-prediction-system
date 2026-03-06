@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 
 # pyright: reportUnknownVariableType=false
 # pyright: reportUnknownMemberType=false
@@ -25,6 +26,37 @@ def cargar_y_preparar_datos():
 
     # Convertir variable objetivo
     df["Churn"] = df["Churn"].map({"Yes": 1, "No": 0})
+
+    # Refactor numero 3: Agregar mas variables de prediccion
+    np.random.seed(42)
+
+    # Número de llamadas a soporte técnico
+    df["CustomerSupportCalls"] = np.random.randint(0, 6, size=len(df))
+
+    # Número de quejas registradas
+    df["ComplaintCount"] = np.random.randint(0, 4, size=len(df))
+
+    # Si recibió una oferta de un competidor
+    df["CompetitorOffer"] = np.random.choice(
+        ["Yes", "No"],
+        size=len(df),
+        p=[0.3, 0.7]
+    )
+
+    # Score de satisfacción del cliente (1 a 10)
+    df["CustomerSatisfactionScore"] = np.random.randint(1, 11, size=len(df))
+
+    # Número de pagos tardíos
+    df["LatePayments"] = np.random.randint(0, 5, size=len(df))
+
+    print("Variables agregadas:")
+    print([
+        "CustomerSupportCalls",
+        "ComplaintCount",
+        "CompetitorOffer",
+        "CustomerSatisfactionScore",
+        "LatePayments"
+    ])
 
     print("Dimensiones después limpieza:", df.shape)
 

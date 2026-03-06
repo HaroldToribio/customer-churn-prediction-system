@@ -1,303 +1,419 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
+
 <head>
-    <title>Dashboard Ejecutivo de Churn</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title>Simulador de Churn de Clientes</title>
 
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            background: linear-gradient(135deg, #1e293b, #334155);
-            color: #1e293b;
-        }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        .header {
-            padding: 30px;
-            text-align: center;
-            color: white;
-            font-size: 26px;
-            font-weight: 600;
-        }
+<style>
 
-        .dashboard {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            padding: 40px;
-            flex-wrap: wrap;
-        }
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:#e2e8f0;
+display:flex;
+}
 
-        .panel {
-            background: #f8fafc;
-            padding: 30px;
-            width: 480px;
-            border-radius: 16px;
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
-        }
+.sidebar{
+width:320px;
+background:#111827;
+padding:20px;
+height:100vh;
+overflow:auto;
+}
 
-        h3 {
-            margin-top: 0;
-            border-bottom: 1px solid #cbd5e1;
-            padding-bottom: 10px;
-        }
+.sidebar h2{
+margin-top:0;
+}
 
-        label {
-            font-size: 13px;
-            font-weight: 500;
-        }
+input,select{
+width:100%;
+padding:6px;
+margin-bottom:10px;
+border-radius:4px;
+border:none;
+}
 
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 14px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-        }
+button{
+width:100%;
+padding:10px;
+background:#2563eb;
+border:none;
+color:white;
+font-weight:bold;
+border-radius:6px;
+cursor:pointer;
+}
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-        }
+button:hover{
+background:#1d4ed8;
+}
 
-        button:hover {
-            background: #1e40af;
-        }
+.dashboard{
+flex:1;
+padding:20px;
+display:grid;
+grid-template-columns:1fr 1fr;
+grid-gap:20px;
+}
 
-        .kpi-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+}
 
-        .kpi {
-            background: white;
-            flex: 1;
-            margin: 5px;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-        }
+.full{
+grid-column:1/3;
+}
 
-        .kpi h2 {
-            margin: 0;
-            font-size: 28px;
-        }
+ul{
+padding-left:20px;
+}
 
-        .kpi p {
-            margin: 5px 0 0;
-            font-size: 13px;
-            color: #64748b;
-        }
+</style>
 
-        .error {
-            color: red;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        .explicacion {
-            font-size: 14px;
-            margin-top: 20px;
-            background: #e2e8f0;
-            padding: 15px;
-            border-radius: 10px;
-        }
-
-    </style>
 </head>
 
 <body>
 
-<div class="header">
-    Dashboard Ejecutivo de Predicción de Abandono (Churn)
+<div class="sidebar">
+
+<h2>Simulador de Cliente</h2>
+
+<label>Género</label>
+<select id="gender">
+<option>Male</option>
+<option>Female</option>
+</select>
+
+<label>Adulto mayor</label>
+<select id="SeniorCitizen">
+<option value="0">No</option>
+<option value="1">Sí</option>
+</select>
+
+<label>Tiene pareja</label>
+<select id="Partner">
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<label>Tiene dependientes</label>
+<select id="Dependents">
+<option>No</option>
+<option>Yes</option>
+</select>
+
+<label>Antigüedad (meses)</label>
+<input id="tenure" type="number" value="12">
+
+<label>Servicio telefónico</label>
+<select id="PhoneService">
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<label>Múltiples líneas</label>
+<select id="MultipleLines">
+<option>No</option>
+<option>Yes</option>
+<option>No phone service</option>
+</select>
+
+<label>Servicio de Internet</label>
+<select id="InternetService">
+<option>DSL</option>
+<option>Fiber optic</option>
+<option>No</option>
+</select>
+
+<label>Seguridad online</label>
+<select id="OnlineSecurity">
+<option>No</option>
+<option>Yes</option>
+<option>No internet service</option>
+</select>
+
+<label>Backup online</label>
+<select id="OnlineBackup">
+<option>No</option>
+<option>Yes</option>
+<option>No internet service</option>
+</select>
+
+<label>Protección de dispositivo</label>
+<select id="DeviceProtection">
+<option>No</option>
+<option>Yes</option>
+<option>No internet service</option>
+</select>
+
+<label>Soporte técnico</label>
+<select id="TechSupport">
+<option>No</option>
+<option>Yes</option>
+<option>No internet service</option>
+</select>
+
+<label>Streaming TV</label>
+<select id="StreamingTV">
+<option>No</option>
+<option>Yes</option>
+<option>No internet service</option>
+</select>
+
+<label>Streaming Películas</label>
+<select id="StreamingMovies">
+<option>No</option>
+<option>Yes</option>
+<option>No internet service</option>
+</select>
+
+<label>Tipo de contrato</label>
+<select id="Contract">
+<option>Month-to-month</option>
+<option>One year</option>
+<option>Two year</option>
+</select>
+
+<label>Facturación electrónica</label>
+<select id="PaperlessBilling">
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<label>Método de pago</label>
+<select id="PaymentMethod">
+<option>Electronic check</option>
+<option>Mailed check</option>
+<option>Bank transfer (automatic)</option>
+<option>Credit card (automatic)</option>
+</select>
+
+<label>Cargo mensual</label>
+<input id="MonthlyCharges" type="number" value="70">
+
+<label>Llamadas a soporte</label>
+<input id="CustomerSupportCalls" type="number" value="1">
+
+<label>Quejas registradas</label>
+<input id="ComplaintCount" type="number" value="0">
+
+<label>Oferta de competidor</label>
+<select id="CompetitorOffer">
+<option>No</option>
+<option>Yes</option>
+</select>
+
+<label>Satisfacción (1-10)</label>
+<input id="CustomerSatisfactionScore" type="number" value="8">
+
+<label>Pagos tardíos</label>
+<input id="LatePayments" type="number" value="0">
+
+<button onclick="predecir()">Predecir churn</button>
+
+<p id="resultado"></p>
+
 </div>
 
 <div class="dashboard">
 
-    <!-- Panel de Entrada -->
-    <div class="panel">
-        <h3>Perfil del Cliente</h3>
+<div class="card">
 
-        <div class="error" id="errorMsg"></div>
+<h3>Probabilidad de churn</h3>
+<canvas id="probChart"></canvas>
 
-        <label>Tipo de Contrato</label>
-        <select id="contract">
-            <option value="Month-to-month">Mensual</option>
-            <option value="One year">Un año</option>
-            <option value="Two year">Dos años</option>
-        </select>
+</div>
 
-        <label>Servicio de Internet</label>
-        <select id="internet">
-            <option value="DSL">DSL</option>
-            <option value="Fiber optic">Fibra óptica</option>
-            <option value="No">Sin servicio</option>
-        </select>
+<div class="card">
 
-        <label>Soporte Técnico</label>
-        <select id="tech">
-            <option value="Yes">Sí</option>
-            <option value="No">No</option>
-        </select>
+<h3>Impacto de factores</h3>
+<canvas id="factorChart"></canvas>
 
-        <label>Antigüedad (meses)</label>
-        <input type="number" id="tenure" min="0">
+</div>
 
-        <label>Cargo Mensual ($)</label>
-        <input type="number" id="monthly" min="0" step="0.01">
+<div class="card full">
 
-        <div id="totalDisplay">
-            Cargos Totales Estimados: $0.00
-        </div>
+<h3>Perfil de riesgo del cliente</h3>
 
-        <br>
-        <button onclick="predict()">Analizar Riesgo</button>
-    </div>
+<ul id="perfil">
+<li>Segmento: -</li>
+<li>Probabilidad estimada: -</li>
+<li>Valor estimado del cliente: -</li>
+</ul>
 
-    <!-- Panel de Resultados -->
-    <div class="panel">
-        <h3>Análisis de Riesgo</h3>
+</div>
 
-        <div class="kpi-container">
-            <div class="kpi">
-                <h2 id="probKPI">0%</h2>
-                <p>Probabilidad de Abandono</p>
-            </div>
+<div class="card full">
 
-            <div class="kpi">
-                <h2 id="riskKPI">BAJO</h2>
-                <p>Nivel de Riesgo</p>
-            </div>
-        </div>
+<h3>Motor de recomendaciones de retención</h3>
 
-        <canvas id="probChart"></canvas>
+<ul id="recomendaciones">
+<li>Ejecute una simulación para ver recomendaciones</li>
+</ul>
 
-        <div class="explicacion">
-            <strong>Explicación del Modelo:</strong><br><br>
-            Esta predicción se genera utilizando un modelo de Regresión Logística.
-            El modelo analiza patrones históricos de comportamiento del cliente,
-            considerando variables como tipo de contrato, antigüedad,
-            cargos mensuales, servicio de internet y soporte técnico.
-            <br><br>
-            Estadísticamente, los clientes con contratos mensuales,
-            baja antigüedad y cargos elevados presentan mayor probabilidad
-            de abandono del servicio.
-        </div>
-
-    </div>
+</div>
 
 </div>
 
 <script>
 
-let chart;
+const probChart=new Chart(
+document.getElementById("probChart"),
+{
+type:"doughnut",
+data:{
+labels:["Churn","Permanece"],
+datasets:[{
+data:[50,50],
+backgroundColor:["#ef4444","#10b981"]
+}]
+}
+})
 
-function calcularTotal() {
-    const tenure = parseFloat(document.getElementById("tenure").value) || 0;
-    const monthly = parseFloat(document.getElementById("monthly").value) || 0;
-    const total = tenure * monthly;
+const factorChart=new Chart(
+document.getElementById("factorChart"),
+{
+type:"bar",
+data:{
+labels:["Contrato","Antigüedad","Cargo mensual","Soporte"],
+datasets:[{
+label:"Impacto",
+data:[10,10,10,10],
+backgroundColor:"#3b82f6"
+}]
+}
+})
 
-    document.getElementById("totalDisplay").innerHTML =
-        "Cargos Totales Estimados: $" + total.toFixed(2);
+function obtenerDatos(){
 
-    return total;
+const MonthlyCharges=Number(document.getElementById("MonthlyCharges").value)
+const tenure=Number(document.getElementById("tenure").value)
+
+const TotalCharges=MonthlyCharges*tenure
+
+return{
+
+gender:document.getElementById("gender").value,
+SeniorCitizen:Number(document.getElementById("SeniorCitizen").value),
+Partner:document.getElementById("Partner").value,
+Dependents:document.getElementById("Dependents").value,
+tenure:tenure,
+PhoneService:document.getElementById("PhoneService").value,
+MultipleLines:document.getElementById("MultipleLines").value,
+InternetService:document.getElementById("InternetService").value,
+OnlineSecurity:document.getElementById("OnlineSecurity").value,
+OnlineBackup:document.getElementById("OnlineBackup").value,
+DeviceProtection:document.getElementById("DeviceProtection").value,
+TechSupport:document.getElementById("TechSupport").value,
+StreamingTV:document.getElementById("StreamingTV").value,
+StreamingMovies:document.getElementById("StreamingMovies").value,
+Contract:document.getElementById("Contract").value,
+PaperlessBilling:document.getElementById("PaperlessBilling").value,
+PaymentMethod:document.getElementById("PaymentMethod").value,
+MonthlyCharges:MonthlyCharges,
+TotalCharges:TotalCharges,
+CustomerSupportCalls:Number(document.getElementById("CustomerSupportCalls").value),
+ComplaintCount:Number(document.getElementById("ComplaintCount").value),
+CompetitorOffer:document.getElementById("CompetitorOffer").value,
+CustomerSatisfactionScore:Number(document.getElementById("CustomerSatisfactionScore").value),
+LatePayments:Number(document.getElementById("LatePayments").value)
+
 }
 
-document.getElementById("tenure").addEventListener("input", calcularTotal);
-document.getElementById("monthly").addEventListener("input", calcularTotal);
-
-function createChart(prob) {
-
-    const ctx = document.getElementById('probChart').getContext('2d');
-
-    if(chart) chart.destroy();
-
-    chart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Abandono', 'Permanece'],
-            datasets: [{
-                data: [prob * 100, 100 - prob * 100]
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        }
-    });
 }
 
-async function predict() {
+async function predecir(){
 
-    document.getElementById("errorMsg").innerText = "";
+const data=obtenerDatos()
 
-    const tenure = parseFloat(document.getElementById("tenure").value);
-    const monthly = parseFloat(document.getElementById("monthly").value);
+const res=await fetch("http://127.0.0.1:8000/predecir",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+})
 
-    if(isNaN(tenure) || tenure <= 0) {
-        document.getElementById("errorMsg").innerText =
-            "La antigüedad debe ser mayor a 0.";
-        return;
-    }
+const resultado=await res.json()
 
-    if(isNaN(monthly) || monthly <= 0) {
-        document.getElementById("errorMsg").innerText =
-            "El cargo mensual debe ser mayor a 0.";
-        return;
-    }
+const prob=resultado.probabilidad_churn
 
-    const totalCharges = calcularTotal();
+probChart.data.datasets[0].data=[prob*100,(1-prob)*100]
+probChart.update()
 
-    const data = {
-        gender: "Female",
-        SeniorCitizen: 0,
-        Partner: "Yes",
-        Dependents: "No",
-        tenure: tenure,
-        PhoneService: "Yes",
-        MultipleLines: "No",
-        InternetService: document.getElementById("internet").value,
-        OnlineSecurity: "No",
-        OnlineBackup: "No",
-        DeviceProtection: "No",
-        TechSupport: document.getElementById("tech").value,
-        StreamingTV: "No",
-        StreamingMovies: "No",
-        Contract: document.getElementById("contract").value,
-        PaperlessBilling: "Yes",
-        PaymentMethod: "Electronic check",
-        MonthlyCharges: monthly,
-        TotalCharges: totalCharges
-    };
+factorChart.data.datasets[0].data=[
+data.Contract==="Month-to-month"?30:10,
+data.tenure,
+data.MonthlyCharges/5,
+data.CustomerSupportCalls*5
+]
 
-    const response = await fetch("http://127.0.0.1:8000/predecir", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    });
+factorChart.update()
 
-    const result = await response.json();
+const segmento=
+prob>0.7?"ALTO RIESGO":
+prob>0.4?"RIESGO MEDIO":
+"BAJO RIESGO"
 
-    const probability = result.probabilidad_churn;
+const valor=(data.MonthlyCharges*12).toFixed(2)
 
-    document.getElementById("probKPI").innerText =
-        (probability * 100).toFixed(2) + "%";
+document.getElementById("perfil").innerHTML=
+`
+<li>Segmento: ${segmento}</li>
+<li>Probabilidad estimada: ${(prob*100).toFixed(2)}%</li>
+<li>Valor estimado del cliente: $${valor}</li>
+`
 
-    document.getElementById("riskKPI").innerText =
-        result.prediccion === 1 ? "ALTO" : "BAJO";
+generarRecomendaciones(data,prob)
 
-    createChart(probability);
+}
+
+function generarRecomendaciones(data,prob){
+
+let rec=[]
+
+if(prob>0.7){
+rec.push("Ofrecer descuento o promoción personalizada")
+rec.push("Contactar cliente con agente de retención")
+}
+
+if(data.CustomerSupportCalls>3){
+rec.push("Asignar soporte técnico prioritario")
+}
+
+if(data.CustomerSatisfactionScore<6){
+rec.push("Enviar encuesta de satisfacción")
+}
+
+if(data.LatePayments>2){
+rec.push("Ofrecer plan de pago flexible")
+}
+
+if(data.CompetitorOffer==="Yes"){
+rec.push("Ofrecer upgrade de plan")
+}
+
+if(data.Contract==="Month-to-month"){
+rec.push("Incentivar contrato anual con descuento")
+}
+
+if(rec.length===0){
+rec.push("Cliente estable, aplicar programa de fidelización")
+}
+
+const lista=document.getElementById("recomendaciones")
+lista.innerHTML=""
+
+rec.forEach(r=>{
+const li=document.createElement("li")
+li.innerText=r
+lista.appendChild(li)
+})
+
 }
 
 </script>
